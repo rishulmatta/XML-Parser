@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+    <script src="modernizer.js" type="text/javascript"></script>
+    <script src="jquery.js" type="text/javascript" ></script>
+	<script src="lengthy.js" type="text/javascript" ></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            if (!Modernizr.webworkers)
+            {
+                alert("This browser doesn't support Web Workers!");
+                return;
+            }
+            $("#btnStart").click(function () {
+			
+                var worker = new Worker("lengthy.js");
+				var xml = $("#xml").val();
+				//var newLines = xml.match(/\n/g).length;
+				
+				console.log("entering worker thread");
+				console.time("Time taken to complete xml validation and json conversion");
+                worker.addEventListener("message", function (evt) {
+                    console.log("Back to parent");
+					console.timeEnd("Time taken to complete xml validation and json conversion");
+					$("#output").text(JSON.stringify(evt.data));
+                },false);
+                worker.postMessage(xml);
+            });
+        });
+
+    </script>
+</head>
+<body>
+    <form>
+		<textarea id = "xml" placeholder = "Your xml input" rows = "40" cols = "100"> </textarea> 
+        <input type="button" id="btnStart" value="Start Processing" />
+		
+		<div id = "output"> </div>
+    </form>
+</body>
+</html>
